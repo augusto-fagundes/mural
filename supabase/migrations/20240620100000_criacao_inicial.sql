@@ -15,11 +15,11 @@ CREATE TABLE IF NOT EXISTS suggestion_statuses (
 );
 
 INSERT INTO suggestion_statuses (id, nome, color) VALUES
-  (gen_random_uuid(), 'Recebido', '#fde68a'),
-  (gen_random_uuid(), 'Em análise', '#a5b4fc'),
-  (gen_random_uuid(), 'Aprovada', '#6ee7b7'),
-  (gen_random_uuid(), 'Rejeitada', '#fca5a5'),
-  (gen_random_uuid(), 'Implementada', '#c4b5fd')
+  (gen_random_uuid(), 'Recebido', '#38bdf8'),
+  (gen_random_uuid(), 'Em análise', '#fbbf24'),
+  (gen_random_uuid(), 'Aprovada', '#10b981'),
+  (gen_random_uuid(), 'Rejeitada', '#f43f5e'),
+  (gen_random_uuid(), 'Implementada', '#8b5cf6')
 ON CONFLICT (nome) DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS roadmap_statuses (
@@ -43,9 +43,9 @@ CREATE TABLE IF NOT EXISTS modules (
 
 INSERT INTO modules (id, nome, color) VALUES
   (gen_random_uuid(), 'Financeiro', '#f59e42'),
-  (gen_random_uuid(), 'Workspace', '#22c55e'),
-  (gen_random_uuid(), 'Bot', '#3b82f6'),
-  (gen_random_uuid(), 'Mapa', '#6366f1')
+  (gen_random_uuid(), 'Workspace', '#84cc16'),
+  (gen_random_uuid(), 'Bot', '#a21caf'),
+  (gen_random_uuid(), 'Mapa', '#06b6d4')
 ON CONFLICT (nome) DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS suggestions (
@@ -124,4 +124,20 @@ CREATE POLICY "Permitir upload público no bucket suggestion-images"
 ON storage.objects
 FOR INSERT
 TO public
-WITH CHECK (bucket_id = 'suggestion-images'); 
+WITH CHECK (bucket_id = 'suggestion-images');
+
+-- Função para incrementar votos
+CREATE OR REPLACE FUNCTION increment_suggestion_votes(suggestion_id uuid)
+RETURNS void AS $$
+BEGIN
+  UPDATE suggestions SET votes = votes + 1 WHERE id = suggestion_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Função para decrementar votos
+CREATE OR REPLACE FUNCTION decrement_suggestion_votes(suggestion_id uuid)
+RETURNS void AS $$
+BEGIN
+  UPDATE suggestions SET votes = GREATEST(votes - 1, 0) WHERE id = suggestion_id;
+END;
+$$ LANGUAGE plpgsql; 

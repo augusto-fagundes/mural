@@ -110,9 +110,12 @@ export const useSuggestions = () => {
     [anonymousEmail, toast]
   );
 
-  const filterSuggestions = async (moduleId: string, statusId: string, searchTerm: string) => {
+  const filterSuggestions = async (moduleId: string, statusId: string, searchTerm: string, includePrivate = false) => {
     let query = supabase.from("suggestions").select("*") as any;
 
+    if (!includePrivate) {
+      query = query.eq("is_public", true);
+    }
     if (moduleId && moduleId !== "all") {
       query = query.eq("module_id", moduleId);
     }
