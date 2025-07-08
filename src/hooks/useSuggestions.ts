@@ -61,7 +61,7 @@ export const useSuggestions = () => {
   const fetchSuggestions = useCallback(
     async (includePrivate = false) => {
       try {
-        let query = supabase.from("suggestions").select("*").order("created_at", { ascending: false });
+        let query = supabase.from("suggestions").select("*").order("title", { ascending: true });
 
         if (!includePrivate) {
           query = query.eq("is_public", true);
@@ -111,7 +111,7 @@ export const useSuggestions = () => {
   );
 
   const filterSuggestions = async (moduleId: string, statusId: string, searchTerm: string, includePrivate = false) => {
-    let query = supabase.from("suggestions").select("*") as any;
+    let query = supabase.from("suggestions").select("*").order("title", { ascending: true }) as any;
 
     if (!includePrivate) {
       query = query.eq("is_public", true);

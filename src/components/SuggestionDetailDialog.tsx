@@ -17,6 +17,7 @@ interface SuggestionDetailDialogProps {
 
 const SuggestionDetailDialog = ({ suggestionId, isOpen, onClose, onVote, suggestions }: SuggestionDetailDialogProps) => {
   const suggestion = suggestions.find((s) => s.id === suggestionId);
+  console.log("🚀 ~ SuggestionDetailDialog ~ suggestion:", suggestion);
   if (!suggestion) return null;
 
   return (
@@ -62,6 +63,20 @@ const SuggestionDetailDialog = ({ suggestionId, isOpen, onClose, onVote, suggest
           {/* Descrição */}
           <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{suggestion.description}</p>
+            {/* Imagens da sugestão */}
+            {Array.isArray(suggestion.image_urls) && suggestion.image_urls.length > 0 && (
+              <div className="mt-4 grid grid-cols-8 gap-3">
+                {suggestion.image_urls.map((url: string, idx: number) => (
+                  <a href={url} target="_blank" rel="noopener noreferrer" key={idx} className="block">
+                    <img
+                      src={url}
+                      alt={`Imagem ${idx + 1}`}
+                      className="rounded-lg border border-gray-200 dark:border-gray-700 object-cover w-20 h-20 hover:opacity-90 transition"
+                    />
+                  </a>
+                ))}
+              </div>
+            )}
             <div className="flex justify-end mt-3">
               <div className="flex items-center gap-2 text-xs text-gray-500">
                 <span className="font-medium text-gray-900 dark:text-gray-100">{suggestion.email}</span>

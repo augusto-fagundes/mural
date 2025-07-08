@@ -45,6 +45,7 @@ const Index = () => {
         const statusObj = statuses.find((s) => s.id === statusId);
         const moduleObj = modules.find((m) => m.id === suggestion.module_id);
         return {
+          ...suggestion,
           id: suggestion.id,
           title: suggestion.title,
           description: suggestion.description,
@@ -79,6 +80,7 @@ const Index = () => {
         youtubeUrl: newSuggestion.youtubeUrl,
         isPublic: newSuggestion.isPublic,
         status_id: newSuggestion.status_id,
+        image_urls: newSuggestion.image_urls,
       });
     } catch (error) {
       console.error("Error creating suggestion:", error);

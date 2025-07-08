@@ -77,13 +77,18 @@ const SuggestionForm = ({ onSubmit, onCancel }: SuggestionFormProps) => {
     if (imageFiles.length > 0) {
       try {
         for (const file of imageFiles) {
-          const ext = file.name.split('.').pop();
+          const ext = file.name.split(".").pop();
           const filePath = `suggestions/${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${ext}`;
-          const { error: uploadError } = await supabase.storage.from('suggestion-images').upload(filePath, file);
+          const { error: uploadError } = await supabase.storage.from("suggestion-images").upload(filePath, file);
           if (uploadError) throw uploadError;
-          const { data } = supabase.storage.from('suggestion-images').getPublicUrl(filePath);
+          const { data } = supabase.storage.from("suggestion-images").getPublicUrl(filePath);
+          if (!data.publicUrl) {
+            throw new Error("URL pública não retornada pelo Supabase");
+          }
           imageUrls.push(data.publicUrl);
+          console.log("Imagem enviada:", data.publicUrl);
         }
+        console.log("Todas as imagens enviadas:", imageUrls);
       } catch (err) {
         toast({
           title: "Erro ao enviar imagens",
@@ -93,7 +98,7 @@ const SuggestionForm = ({ onSubmit, onCancel }: SuggestionFormProps) => {
         return;
       }
     }
-
+    console.log("Enviando para onSubmit:", { ...formData, image_urls: imageUrls });
     onSubmit({
       ...formData,
       module_id: selectedModule.id,
