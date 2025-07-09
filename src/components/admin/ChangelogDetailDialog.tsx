@@ -91,7 +91,7 @@ export const ChangelogDetailDialog = ({ item, open, onOpenChange }: ChangelogDet
             <div className="space-y-2">
               {item.changes.map((change, index) => (
                 <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
+                  <div className="w-2 h-2 bg-dark_blue_mk rounded-full mt-2 flex-shrink-0" />
                   <span className="text-gray-700">{change}</span>
                 </div>
               ))}

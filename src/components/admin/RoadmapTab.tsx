@@ -70,7 +70,7 @@ const RoadmapTab = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Roadmap</h2>
-        <Button onClick={() => setIsFormOpen(true)} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
+        <Button onClick={() => setIsFormOpen(true)} className="flex items-center gap-2 bg-dark_blue_mk hover:bg-blue-700 dark:bg-dark_blue_mk dark:hover:bg-dark_blue_mk">
           <Plus className="w-4 h-4" />
           Novo Item
         </Button>

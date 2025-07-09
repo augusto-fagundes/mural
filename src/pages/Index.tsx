@@ -109,38 +109,38 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-[#f8f8f2] to-[#bd93f9]/10 dark:from-[#282a36] dark:to-[#44475a]">
       <Header onCreateSuggestion={() => setShowFormDialog(true)} />
 
       <main className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">Mural de Sugestões MK Solutions</h1>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-[#f8f8f2] mb-6">Mural de Sugestões MK Solutions</h1>
           <Tabs defaultValue="suggestions">
             <TabsContent value="suggestions" className="mt-6">
               <div className="text-center mb-8">
-                <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                <p className="text-lg text-gray-600 dark:text-[#bd93f9] max-w-2xl mx-auto">
                   Ajude-nos a melhorar nossos produtos! Compartilhe suas ideias, vote nas sugestões e acompanhe o desenvolvimento.
                 </p>
               </div>
 
               <FilterBar
                 suggestions={transformedSuggestions}
-                filterSuggestions={async (moduleId: string, statusId: string, searchTerm: string) => {
-                  await filterSuggestions(moduleId, statusId, searchTerm);
+                filterSuggestions={async (moduleId, statusId, searchTerm, customSortBy) => {
+                  await filterSuggestions(moduleId, statusId, searchTerm, false, customSortBy);
                 }}
               />
 
               <Tabs defaultValue="cards" className="mt-8">
-                <TabsList className="grid w-full grid-cols-2 max-w-2xl mx-auto bg-white dark:bg-gray-800 border dark:border-gray-700">
+                <TabsList className="grid w-full grid-cols-2 max-w-2xl mx-auto bg-white dark:bg-[#44475a] border dark:border-[#6272a4]">
                   <TabsTrigger
                     value="cards"
-                    className="data-[state=active]:bg-blue-500 data-[state=active]:text-white dark:text-gray-300 dark:data-[state=active]:bg-blue-600"
+                    className="data-[state=active]:bg-dark_blue_mk data-[state=active]:text-white dark:data-[state=active]:bg-[#bd93f9] dark:data-[state=active]:text-[#282a36] dark:text-[#f8f8f2]"
                   >
                     Visualização em Card
                   </TabsTrigger>
                   <TabsTrigger
                     value="list"
-                    className="data-[state=active]:bg-blue-500 data-[state=active]:text-white dark:text-gray-300 dark:data-[state=active]:bg-blue-600"
+                    className="data-[state=active]:bg-dark_blue_mk data-[state=active]:text-white dark:data-[state=active]:bg-[#bd93f9] dark:data-[state=active]:text-[#282a36] dark:text-[#f8f8f2]"
                   >
                     Lista
                   </TabsTrigger>

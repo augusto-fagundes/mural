@@ -40,7 +40,7 @@ const DashboardTab = () => {
         
         {/* Cards principais lado a lado */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-          <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+          <Card className="bg-gradient-to-r from-dark_blue_mk to-blue-600 text-white">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium opacity-90 flex items-center gap-2">
                 <BarChart3 className="w-4 h-4" />

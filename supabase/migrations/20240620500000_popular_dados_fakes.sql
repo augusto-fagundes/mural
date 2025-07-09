@@ -26,23 +26,23 @@ ON CONFLICT (email) DO NOTHING;
 
 -- Popula sugestões
 INSERT INTO suggestions (id, title, description, email, is_public, votes, comments_count, status_id, module_id, created_at, updated_at)
-SELECT gen_random_uuid(), 'Adicionar filtro avançado no relatório financeiro', 'Gostaria de poder filtrar os relatórios por período personalizado, tipo de transação e status de pagamento simultaneamente para ter uma visão mais detalhada dos dados financeiros.', 'carlos@empresa.com', true, 23, 5, s.id, m.id, now(), now()
+SELECT gen_random_uuid(), 'Adicionar filtro avançado no relatório financeiro', 'Gostaria de poder filtrar os relatórios por período personalizado, tipo de transação e status de pagamento simultaneamente para ter uma visão mais detalhada dos dados financeiros.', 'carlos@empresa.com', true, 0, 0, s.id, m.id, now(), now()
 FROM suggestion_statuses s, modules m WHERE s.nome = 'Em análise' AND m.nome = 'Financeiro';
 
 INSERT INTO suggestions (id, title, description, email, is_public, votes, comments_count, status_id, module_id, created_at, updated_at)
-SELECT gen_random_uuid(), 'Integração com Slack para notificações', 'Seria muito útil receber notificações importantes diretamente no Slack da equipe quando houver atualizações críticas no sistema.', 'ana@empresa.com', true, 18, 3, s.id, m.id, now(), now()
+SELECT gen_random_uuid(), 'Integração com Slack para notificações', 'Seria muito útil receber notificações importantes diretamente no Slack da equipe quando houver atualizações críticas no sistema.', 'ana@empresa.com', true, 0, 0, s.id, m.id, now(), now()
 FROM suggestion_statuses s, modules m WHERE s.nome = 'Recebido' AND m.nome = 'Workspace';
 
 INSERT INTO suggestions (id, title, description, email, is_public, votes, comments_count, status_id, module_id, created_at, updated_at)
-SELECT gen_random_uuid(), 'Modo escuro para toda a plataforma', 'Implementar tema escuro em todas as páginas para melhorar a experiência durante o uso noturno e reduzir o cansaço visual.', 'pedro@empresa.com', true, 45, 12, s.id, m.id, now(), now()
+SELECT gen_random_uuid(), 'Modo escuro para toda a plataforma', 'Implementar tema escuro em todas as páginas para melhorar a experiência durante o uso noturno e reduzir o cansaço visual.', 'pedro@empresa.com', true, 0, 0, s.id, m.id, now(), now()
 FROM suggestion_statuses s, modules m WHERE s.nome = 'Aprovada' AND m.nome = 'Bot';
 
 INSERT INTO suggestions (id, title, description, email, is_public, votes, comments_count, status_id, module_id, created_at, updated_at)
-SELECT gen_random_uuid(), 'Exportar dados do mapa em formato Excel', 'Possibilidade de exportar todos os dados visualizados no mapa diretamente para planilhas Excel para análise offline.', 'lucia@empresa.com', true, 31, 8, s.id, m.id, now(), now()
+SELECT gen_random_uuid(), 'Exportar dados do mapa em formato Excel', 'Possibilidade de exportar todos os dados visualizados no mapa diretamente para planilhas Excel para análise offline.', 'lucia@empresa.com', true, 0, 0, s.id, m.id, now(), now()
 FROM suggestion_statuses s, modules m WHERE s.nome = 'Implementada' AND m.nome = 'Mapa';
 
 INSERT INTO suggestions (id, title, description, email, is_public, votes, comments_count, status_id, module_id, created_at, updated_at)
-SELECT gen_random_uuid(), 'Sugestão privada para testes', 'Esta é uma sugestão privada que não deve aparecer no mural público.', 'interno@mksolution.com', false, 2, 1, s.id, m.id, now(), now()
+SELECT gen_random_uuid(), 'Sugestão privada para testes', 'Esta é uma sugestão privada que não deve aparecer no mural público.', 'interno@mksolution.com', false, 0, 0, s.id, m.id, now(), now()
 FROM suggestion_statuses s, modules m WHERE s.nome = 'Recebido' AND m.nome = 'Workspace';
 
 -- Popula votos (exemplo)

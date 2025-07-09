@@ -141,3 +141,79 @@ BEGIN
   UPDATE suggestions SET votes = GREATEST(votes - 1, 0) WHERE id = suggestion_id;
 END;
 $$ LANGUAGE plpgsql; 
+
+-- Função para incrementar comentários
+CREATE OR REPLACE FUNCTION increment_suggestion_comments()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM suggestions WHERE id = NEW.suggestion_id) THEN
+    UPDATE suggestions
+    SET comments_count = comments_count + 1
+    WHERE id = NEW.suggestion_id;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Função para decrementar comentários
+CREATE OR REPLACE FUNCTION decrement_suggestion_comments()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM suggestions WHERE id = OLD.suggestion_id) THEN
+    UPDATE suggestions
+    SET comments_count = GREATEST(comments_count - 1, 0)
+    WHERE id = OLD.suggestion_id;
+  END IF;
+  RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger para INSERT em suggestion_comments
+CREATE TRIGGER trigger_increment_comments
+AFTER INSERT ON suggestion_comments
+FOR EACH ROW
+EXECUTE FUNCTION increment_suggestion_comments();
+
+-- Trigger para DELETE em suggestion_comments
+CREATE TRIGGER trigger_decrement_comments
+AFTER DELETE ON suggestion_comments
+FOR EACH ROW
+EXECUTE FUNCTION decrement_suggestion_comments();
+
+-- Função para incrementar votos (trigger)
+CREATE OR REPLACE FUNCTION trigger_increment_suggestion_votes()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM suggestions WHERE id = NEW.suggestion_id) THEN
+    UPDATE suggestions
+    SET votes = votes + 1
+    WHERE id = NEW.suggestion_id;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Função para decrementar votos (trigger)
+CREATE OR REPLACE FUNCTION trigger_decrement_suggestion_votes()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM suggestions WHERE id = OLD.suggestion_id) THEN
+    UPDATE suggestions
+    SET votes = GREATEST(votes - 1, 0)
+    WHERE id = OLD.suggestion_id;
+  END IF;
+  RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger para INSERT em suggestion_votes
+CREATE TRIGGER trigger_increment_votes
+AFTER INSERT ON suggestion_votes
+FOR EACH ROW
+EXECUTE FUNCTION trigger_increment_suggestion_votes();
+
+-- Trigger para DELETE em suggestion_votes
+CREATE TRIGGER trigger_decrement_votes
+AFTER DELETE ON suggestion_votes
+FOR EACH ROW
+EXECUTE FUNCTION trigger_decrement_suggestion_votes(); 

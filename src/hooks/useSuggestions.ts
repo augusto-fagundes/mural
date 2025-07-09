@@ -51,17 +51,42 @@ interface CommentInput {
   content: string;
 }
 
+const filterFields = {
+  recent: {
+    field: "created_at",
+    ascending: true,
+  },
+  votes: {
+    field: "votes",
+    ascending: false,
+  },
+  comments: {
+    field: "comments_count",
+    ascending: false,
+  },
+};
+
 export const useSuggestions = () => {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-  console.log("🚀 ~ useSuggestions ~ suggestions:", suggestions);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const { anonymousEmail } = useAnonymousEmail();
 
+  // Adiciona o estado e persistência de sortBy
+  const getInitialSortBy = () => (typeof window !== "undefined" && localStorage.getItem("suggestions_sortBy")) || "votes";
+  const [sortBy, setSortBy] = useState<string>(getInitialSortBy);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("suggestions_sortBy", sortBy);
+    }
+  }, [sortBy]);
+
   const fetchSuggestions = useCallback(
     async (includePrivate = false) => {
       try {
-        let query = supabase.from("suggestions").select("*").order("title", { ascending: true });
+        let query: any = supabase.from("suggestions").select("*");
+        query = query.order(filterFields[sortBy].field as string, { ascending: filterFields[sortBy].ascending });
 
         if (!includePrivate) {
           query = query.eq("is_public", true);
@@ -110,9 +135,9 @@ export const useSuggestions = () => {
     [anonymousEmail, toast]
   );
 
-  const filterSuggestions = async (moduleId: string, statusId: string, searchTerm: string, includePrivate = false) => {
-    let query = supabase.from("suggestions").select("*").order("title", { ascending: true }) as any;
-
+  const filterSuggestions = async (moduleId: string, statusId: string, searchTerm: string, includePrivate = false, customSortBy: string) => {
+    let query: any = supabase.from("suggestions").select("*");
+    query = query.order(filterFields[customSortBy || sortBy].field as string, { ascending: filterFields[customSortBy || sortBy].ascending });
     if (!includePrivate) {
       query = query.eq("is_public", true);
     }
@@ -122,6 +147,7 @@ export const useSuggestions = () => {
     if (statusId && statusId !== "all") {
       query = query.eq("status_id", statusId);
     }
+
     if (searchTerm && searchTerm.trim() !== "") {
       query = query.ilike("title", `%${searchTerm}%`);
     }
@@ -282,15 +308,6 @@ export const useSuggestions = () => {
       if (existingVote) {
         // Remove vote
         await supabase.from("suggestion_votes").delete().eq("suggestion_id", suggestionId).eq("user_email", anonymousEmail);
-
-        // Update vote count using database function
-        const { error: updateError } = await supabase.rpc("decrement_suggestion_votes", {
-          suggestion_id: suggestionId,
-        });
-
-        if (updateError) {
-          console.error("Error decrementing votes:", updateError);
-        }
       } else {
         // Add vote
         await supabase.from("suggestion_votes").insert([
@@ -299,15 +316,6 @@ export const useSuggestions = () => {
             user_email: anonymousEmail,
           },
         ]);
-
-        // Update vote count using database function
-        const { error: updateError } = await supabase.rpc("increment_suggestion_votes", {
-          suggestion_id: suggestionId,
-        });
-
-        if (updateError) {
-          console.error("Error incrementing votes:", updateError);
-        }
       }
 
       // Refresh suggestions to get updated vote count
@@ -329,7 +337,7 @@ export const useSuggestions = () => {
         .from("suggestion_comments")
         .select("*")
         .eq("suggestion_id", suggestionId)
-        .order("created_at", { ascending: true });
+        .order("created_at", { ascending: false });
 
       if (error) {
         console.error("Error fetching comments:", error);
@@ -393,5 +401,7 @@ export const useSuggestions = () => {
     fetchComments,
     addComment,
     filterSuggestions,
+    sortBy,
+    setSortBy,
   };
 };

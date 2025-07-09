@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -12,29 +11,23 @@ const Header = ({ onCreateSuggestion }: HeaderProps) => {
   const navigate = useNavigate();
 
   const handleAdminClick = () => {
-    navigate('/admin');
+    navigate("/admin");
   };
 
   return (
-    <header className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-lg border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+    <header className="bg-white/95 dark:bg-[#282a36]/95 backdrop-blur-sm shadow-lg border-b border-gray-200 dark:border-[#44475a] sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <img 
-              src="/placeholder.svg" 
-              alt="MK Solutions" 
-              className="h-8 w-8 rounded-lg"
-            />
-            <span className="text-xl font-bold text-gray-900 dark:text-white">
-              MK Solutions
-            </span>
+            <img src="/placeholder.svg" alt="MK Solutions" className="h-8 w-8 rounded-lg" />
+            <span className="text-xl font-bold text-gray-900 dark:text-[#f8f8f2]">MK Solutions</span>
           </div>
-          
+
           <div className="flex items-center space-x-4">
             <ThemeToggle />
             <Button
               onClick={onCreateSuggestion}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white dark:from-blue-500 dark:to-purple-500 dark:hover:from-blue-600 dark:hover:to-purple-600"
+              className="bg-gradient-to-r from-dark_blue_mk to-dark_blue_mk hover:from-blue_mk hover:to-blue_mk text-white dark:from-[#bd93f9] dark:to-[#ff79c6] dark:hover:from-[#bd93f9] dark:hover:to-[#ff79c6] dark:text-[#282a36]"
             >
               Nova Sugestão
             </Button>

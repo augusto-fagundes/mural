@@ -96,7 +96,7 @@ const SuggestionTable = ({ suggestions, onVote, onClick }: SuggestionTableProps)
                   className={cn(
                     "flex flex-col items-center justify-center px-3 py-2 rounded-lg border-2 transition-all duration-200 hover:scale-105 min-w-[48px]",
                     suggestion.hasVoted 
-                      ? "bg-blue-500 border-blue-500 text-white hover:bg-blue-600" 
+                      ? "bg-dark_blue_mk border-dark_blue_mk text-white hover:bg-dark_blue_mk" 
                       : "bg-white border-gray-200 text-gray-600 hover:border-blue-300 hover:text-blue-600"
                   )}
                 >

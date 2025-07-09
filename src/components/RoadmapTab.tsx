@@ -107,11 +107,11 @@ const RoadmapTab = () => {
 
       <Tabs defaultValue="cards" className="w-full">
         <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto mb-8 bg-white dark:bg-gray-800 border dark:border-gray-700">
-          <TabsTrigger value="cards" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white dark:text-gray-300 dark:data-[state=active]:bg-blue-600 flex items-center gap-2">
+          <TabsTrigger value="cards" className="data-[state=active]:bg-dark_blue_mk data-[state=active]:text-white dark:text-gray-300 dark:data-[state=active]:bg-dark_blue_mk flex items-center gap-2">
             <Lightbulb className="w-4 h-4" />
             Cards
           </TabsTrigger>
-          <TabsTrigger value="gantt" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white dark:text-gray-300 dark:data-[state=active]:bg-blue-600 flex items-center gap-2">
+          <TabsTrigger value="gantt" className="data-[state=active]:bg-dark_blue_mk data-[state=active]:text-white dark:text-gray-300 dark:data-[state=active]:bg-dark_blue_mk flex items-center gap-2">
             <BarChart3 className="w-4 h-4" />
             Gantt
           </TabsTrigger>

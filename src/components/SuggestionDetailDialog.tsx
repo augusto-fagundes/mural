@@ -17,7 +17,6 @@ interface SuggestionDetailDialogProps {
 
 const SuggestionDetailDialog = ({ suggestionId, isOpen, onClose, onVote, suggestions }: SuggestionDetailDialogProps) => {
   const suggestion = suggestions.find((s) => s.id === suggestionId);
-  console.log("🚀 ~ SuggestionDetailDialog ~ suggestion:", suggestion);
   if (!suggestion) return null;
 
   return (
