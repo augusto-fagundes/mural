@@ -1,4 +1,3 @@
-
 import {
   Sidebar,
   SidebarContent,
@@ -10,12 +9,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { 
-  LayoutDashboard, 
-  Map, 
-  MessageSquare, 
-  FileText, 
-  Users
+import {
+  LayoutDashboard,
+  Map,
+  MessageSquare,
+  FileText,
+  Users,
+  TrendingUp, // 1. Ícone adicionado
 } from "lucide-react";
 
 interface AppSidebarProps {
@@ -31,7 +31,7 @@ const menuItems = [
   },
   {
     title: "Roadmap",
-    value: "roadmap", 
+    value: "roadmap",
     icon: Map,
   },
   {
@@ -43,6 +43,12 @@ const menuItems = [
     title: "Changelog",
     value: "changelog",
     icon: FileText,
+  },
+  // 2. Novo item de menu adicionado aqui
+  {
+    title: "Priorização",
+    value: "prioritize",
+    icon: TrendingUp,
   },
   {
     title: "Usuários e Permissões",
@@ -64,7 +70,7 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.value}>
-                  <SidebarMenuButton 
+                  <SidebarMenuButton
                     onClick={() => onTabChange(item.value)}
                     isActive={activeTab === item.value}
                     className="w-full justify-start"

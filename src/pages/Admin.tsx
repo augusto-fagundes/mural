@@ -1,6 +1,9 @@
-
 import { useState } from "react";
-import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
+import {
+  SidebarProvider,
+  SidebarTrigger,
+  SidebarInset,
+} from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { House } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -11,13 +14,14 @@ import RoadmapTab from "@/components/admin/RoadmapTab";
 import SuggestionsTab from "@/components/admin/SuggestionsTab";
 import ChangelogTab from "@/components/admin/ChangelogTab";
 import UsersTab from "@/components/admin/UsersTab";
+import Prioritize from "./Priorize"; // Importa a nova página
 
 const Admin = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const navigate = useNavigate();
 
   const handleHomeClick = () => {
-    navigate('/');
+    navigate("/");
   };
 
   const renderContent = () => {
@@ -30,6 +34,9 @@ const Admin = () => {
         return <SuggestionsTab />;
       case "changelog":
         return <ChangelogTab />;
+      // Adiciona o "case" para a nova página
+      case "prioritize":
+        return <Prioritize />;
       case "users":
         return <UsersTab />;
       default:
@@ -47,9 +54,14 @@ const Admin = () => {
               <SidebarTrigger className="-ml-1" />
               <div className="h-4 w-px bg-gray-200 dark:bg-gray-700" />
               <h2 className="text-lg font-semibold capitalize flex-1 text-gray-900 dark:text-white">
-                {activeTab === "suggestions" ? "Sugestões" : 
-                 activeTab === "users" ? "Usuários e Permissões" : 
-                 activeTab}
+                {/* Lógica para mostrar o título correto no cabeçalho */}
+                {activeTab === "suggestions"
+                  ? "Sugestões"
+                  : activeTab === "users"
+                  ? "Usuários e Permissões"
+                  : activeTab === "prioritize"
+                  ? "Priorização"
+                  : activeTab}
               </h2>
               <div className="flex items-center gap-2">
                 <ThemeToggle />
