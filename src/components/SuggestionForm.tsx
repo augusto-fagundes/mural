@@ -42,75 +42,155 @@ const SuggestionForm = ({ onSubmit, onCancel }: SuggestionFormProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (formData.description.length < 200) {
-      toast({
-        title: "Descrição muito curta",
-        description: "A descrição deve ter pelo menos 200 caracteres.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Buscar o id do módulo pelo nome
-    const selectedModule = modules.find((m) => m.nome === formData.module);
-    if (!selectedModule) {
-      toast({
-        title: "Selecione um módulo válido",
-        description: "Por favor, selecione um módulo existente.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Buscar o id do status 'Recebido'
-    const statusRecebido = statuses.find((s) => s.nome === "Recebido");
-    if (!statusRecebido) {
-      toast({
-        title: "Erro ao enviar sugestão",
-        description: "Status padrão 'Recebido' não encontrado.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const imageUrls: string[] = [];
-    if (imageFiles.length > 0) {
-      try {
-        for (const file of imageFiles) {
-          const ext = file.name.split(".").pop();
-          const filePath = `suggestions/${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${ext}`;
-          const { error: uploadError } = await supabase.storage.from("suggestion-images").upload(filePath, file);
-          if (uploadError) throw uploadError;
-          const { data } = supabase.storage.from("suggestion-images").getPublicUrl(filePath);
-          if (!data.publicUrl) {
-            throw new Error("URL pública não retornada pelo Supabase");
-          }
-          imageUrls.push(data.publicUrl);
-          console.log("Imagem enviada:", data.publicUrl);
-        }
-        console.log("Todas as imagens enviadas:", imageUrls);
-      } catch (err) {
+    try {
+      // Validações básicas
+      if (!formData.title.trim()) {
         toast({
-          title: "Erro ao enviar imagens",
-          description: "Não foi possível fazer upload das imagens.",
+          title: "Título obrigatório",
+          description: "Por favor, preencha o título da sugestão.",
           variant: "destructive",
         });
         return;
       }
-    }
-    console.log("Enviando para onSubmit:", { ...formData, image_urls: imageUrls });
-    onSubmit({
-      ...formData,
-      module_id: selectedModule.id,
-      status_id: statusRecebido.id,
-      module: undefined, // não enviar o nome
-      image_urls: imageUrls,
-    });
 
-    toast({
-      title: "Sugestão enviada com sucesso!",
-      description: "Sua sugestão foi recebida e será analisada pela nossa equipe.",
-    });
+      if (!formData.email.trim()) {
+        toast({
+          title: "E-mail obrigatório",
+          description: "Por favor, preencha seu e-mail.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!formData.module) {
+        toast({
+          title: "Módulo obrigatório",
+          description: "Por favor, selecione um módulo.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (formData.description.length < 200) {
+        toast({
+          title: "Descrição muito curta",
+          description: "A descrição deve ter pelo menos 200 caracteres.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Verificar se os dados necessários estão carregados
+      if (loadingModules || loadingStatuses) {
+        toast({
+          title: "Carregando dados",
+          description: "Aguarde o carregamento dos dados do sistema.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Buscar o id do módulo pelo nome
+      const selectedModule = modules.find((m) => m.nome === formData.module);
+      if (!selectedModule) {
+        console.error("Módulos disponíveis:", modules);
+        console.error("Módulo selecionado:", formData.module);
+        toast({
+          title: "Módulo inválido",
+          description: "O módulo selecionado não foi encontrado. Tente selecionar novamente.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Buscar o id do status 'Recebido'
+      const statusRecebido = statuses.find((s) => s.nome === "Recebido");
+      if (!statusRecebido) {
+        console.error("Status disponíveis:", statuses);
+        toast({
+          title: "Erro de configuração",
+          description: "Status padrão 'Recebido' não encontrado. Entre em contato com o administrador.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Upload de imagens
+      const imageUrls: string[] = [];
+      if (imageFiles.length > 0) {
+        try {
+          for (const file of imageFiles) {
+            // Validar tamanho do arquivo (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+              toast({
+                title: "Arquivo muito grande",
+                description: `O arquivo ${file.name} é maior que 5MB.`,
+                variant: "destructive",
+              });
+              return;
+            }
+
+            const ext = file.name.split(".").pop();
+            const filePath = `suggestions/${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${ext}`;
+            const { error: uploadError } = await supabase.storage.from("suggestion-images").upload(filePath, file);
+            
+            if (uploadError) {
+              console.error("Upload error:", uploadError);
+              throw uploadError;
+            }
+
+            const {
+              data: { publicUrl },
+            } = supabase.storage.from("suggestion-images").getPublicUrl(filePath);
+            imageUrls.push(publicUrl);
+          }
+        } catch (error) {
+          console.error("Error uploading images:", error);
+          toast({
+            title: "Erro no upload de imagens",
+            description: "Não foi possível fazer upload das imagens. Tente novamente.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
+      // Preparar dados para envio
+      const suggestionData = {
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        module_id: selectedModule.id,
+        status_id: statusRecebido.id,
+        email: formData.email.trim(),
+        youtubeUrl: formData.youtubeUrl?.trim() || undefined,
+        isPublic: formData.isPublic,
+        image_urls: imageUrls,
+      };
+
+      console.log("Enviando sugestão:", suggestionData);
+      
+      // Enviar para o handler
+      await onSubmit(suggestionData);
+
+      // Limpar formulário após sucesso
+      setFormData({
+        title: "",
+        description: "",
+        module: "",
+        email: "",
+        youtubeUrl: "",
+        isPublic: true,
+      });
+      setImageFiles([]);
+
+    } catch (error) {
+      console.error("Erro no handleSubmit:", error);
+      toast({
+        title: "Erro inesperado",
+        description: "Ocorreu um erro ao processar sua sugestão. Tente novamente.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleChange = (field: string, value: string | boolean) => {

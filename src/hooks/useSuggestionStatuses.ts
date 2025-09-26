@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { MOCK_SUGGESTION_STATUSES, simulateNetworkDelay } from "@/data/mockSupabaseData";
 
 export interface SuggestionStatus {
   id: string;
@@ -37,9 +38,15 @@ export function useSuggestionStatuses() {
         if (!error && data) {
           cachedStatuses = data;
           setStatuses(data);
+        } else {
+          throw error;
         }
       } catch (error) {
-        console.error("Erro ao carregar status de sugestões:", error);
+        console.warn("Supabase não disponível, usando dados mockados:", error);
+        // Usar dados mockados quando Supabase não estiver disponível
+        await simulateNetworkDelay(300);
+        cachedStatuses = MOCK_SUGGESTION_STATUSES;
+        setStatuses(MOCK_SUGGESTION_STATUSES);
       } finally {
         setLoading(false);
         isLoading = false;
@@ -50,4 +57,4 @@ export function useSuggestionStatuses() {
   }, []);
 
   return { statuses, loading };
-} 
+}

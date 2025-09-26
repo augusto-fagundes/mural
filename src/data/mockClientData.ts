@@ -1,6 +1,5 @@
 // src/data/mockClientData.ts
 
-// 1. Definimos a estrutura (interface) dos dados de um cliente
 export interface ClientData {
   nome: string;
   email: string;
@@ -16,17 +15,16 @@ export interface ClientData {
   anos_de_casa: number;
 }
 
-// 2. Criamos uma lista de clientes mockados, baseada na sua planilha
 export const MOCK_CLIENTS: ClientData[] = [
   {
-    nome: "VETORIAL.NET INFORMATICA E SERVICOS DE INTERNET LTDA",
+    nome: "ALCANS TELECOM LTDA",
     email: "carlos@empresa.com",
-    total_clientes: 12000,
-    status_preventivo: "Preventivo Crítico",
-    nps: 2,
+    total_clientes: 58000,
+    status_preventivo: "Preventivo Urgente",
+    nps: 0,
     fidelidade: "Total",
     quantidade_sugestoes: 8,
-    anos_de_casa: 6,
+    anos_de_casa: 10,
   },
   {
     nome: "RAZAOINFO INTERNET LTDA",
@@ -58,15 +56,24 @@ export const MOCK_CLIENTS: ClientData[] = [
     quantidade_sugestoes: 1,
     anos_de_casa: 1,
   },
+  {
+    nome: "Cliente Novo Pequeno",
+    email: "cliente.novo@empresa.com",
+    total_clientes: 150,
+    status_preventivo: "N/A",
+    nps: 10,
+    fidelidade: "Sem fidelidade",
+    quantidade_sugestoes: 1,
+    anos_de_casa: 0,
+  },
 ];
 
-// 3. Criamos um cliente padrão para sugestões cujo e-mail não esteja na lista
 export const DEFAULT_CLIENT_DATA: ClientData = {
   nome: "Cliente Não Identificado",
   email: "",
   total_clientes: 0,
   status_preventivo: "N/A",
-  nps: 5, // Uma nota neutra
+  nps: 5,
   fidelidade: "Sem fidelidade",
   quantidade_sugestoes: 1,
   anos_de_casa: 0,

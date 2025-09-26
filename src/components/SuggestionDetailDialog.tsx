@@ -51,14 +51,6 @@ const SuggestionDetailDialog = ({ suggestionId, isOpen, onClose, onVote, suggest
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Status e informações principais */}
-          <div className="flex gap-2 flex-wrap items-center mb-2">
-            <Badge style={suggestion.statusColor ? { backgroundColor: suggestion.statusColor, color: "#fff" } : {}} variant="secondary">
-              {suggestion.status}
-            </Badge>
-            <Badge style={suggestion.moduleColor ? { backgroundColor: suggestion.moduleColor, color: "#fff" } : {}}>{suggestion.module}</Badge>
-          </div>
-
           {/* Descrição */}
           <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{suggestion.description}</p>
@@ -77,9 +69,8 @@ const SuggestionDetailDialog = ({ suggestionId, isOpen, onClose, onVote, suggest
               </div>
             )}
             <div className="flex justify-end mt-3">
-              <div className="flex items-center gap-2 text-xs text-gray-500">
+              <div className="flex items-center gap-3 text-xs text-gray-500">
                 <span className="font-medium text-gray-900 dark:text-gray-100">{suggestion.email}</span>
-                <span className="text-gray-400">•</span>
                 <div className="flex items-center gap-1 text-gray-500">
                   <Calendar className="w-4 h-4" />
                   <span>{suggestion.createdAt}</span>

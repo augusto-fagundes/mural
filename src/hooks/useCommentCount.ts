@@ -1,56 +1,44 @@
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState, useEffect } from "react";
 import { useCommentRefresh } from "@/contexts/CommentRefreshContext";
 
-// Cache para contagens de comentários
-const commentCountCache = new Map<string, number>();
-const loadingCounts = new Set<string>();
-
-export function useCommentCount(suggestionId: string) {
-  const [count, setCount] = useState<number>(0);
-  const { refresh } = useCommentRefresh();
+export const useCommentCount = (suggestionId: string) => {
+  const [count, setCount] = useState(0);
+  const { refreshTrigger } = useCommentRefresh();
 
   useEffect(() => {
-    if (!suggestionId) return;
-    let isMounted = true;
-
-    async function fetchCount() {
-      // Se já temos o valor em cache e não está sendo atualizado, use-o
-      if (commentCountCache.has(suggestionId) && !refresh) {
-        setCount(commentCountCache.get(suggestionId)!);
-        return;
-      }
-
-      // Se já está carregando, aguarde
-      if (loadingCounts.has(suggestionId)) {
-        return;
-      }
-
-      loadingCounts.add(suggestionId);
-
+    const fetchCommentCount = async () => {
       try {
-        const { count } = await supabase
-          .from("suggestion_comments")
-          .select("*", { count: "exact", head: true })
-          .eq("suggestion_id", suggestionId);
-
-        const countValue = count || 0;
+        // Simular contagem de comentários mock baseada no ID da sugestão
+        const mockCounts: { [key: string]: number } = {
+          'test-1': 5,
+          'test-2': 3,
+          'test-3': 8,
+          'test-4': 2,
+          'test-5': 12,
+          'test-6': 1,
+          'test-7': 7,
+          'test-8': 4,
+          'test-9': 9,
+          'test-10': 6,
+          'test-11': 3,
+          'test-12': 11,
+          'test-13': 2,
+          'test-14': 5,
+          'test-15': 8,
+        };
         
-        if (isMounted) {
-          setCount(countValue);
-          commentCountCache.set(suggestionId, countValue);
-        }
+        // Simular delay de rede
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        setCount(mockCounts[suggestionId] || 2);
       } catch (error) {
-        console.error("Erro ao carregar contagem de comentários:", error);
-      } finally {
-        loadingCounts.delete(suggestionId);
+        console.error("Error fetching comment count:", error);
+        setCount(2); // Fallback para 2 comentários
       }
-    }
+    };
 
-    fetchCount();
-
-    return () => { isMounted = false; };
-  }, [suggestionId, refresh]);
+    fetchCommentCount();
+  }, [suggestionId, refreshTrigger]);
 
   return count;
-} 
+};

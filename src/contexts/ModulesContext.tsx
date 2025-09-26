@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { MOCK_MODULES, simulateNetworkDelay } from "@/data/mockSupabaseData";
 
 interface Module {
   id: string;
@@ -15,8 +16,18 @@ export const ModulesProvider = ({ children }: { children: React.ReactNode }) => 
 
   useEffect(() => {
     async function fetchModules() {
-      const { data } = await supabase.from("modules").select("*").order("nome");
-      setModules(data || []);
+      try {
+        const { data, error } = await supabase.from("modules").select("*").order("nome");
+        if (error) {
+          throw error;
+        } else {
+          setModules(data || MOCK_MODULES);
+        }
+      } catch (error) {
+        console.warn("Supabase não disponível, usando dados mockados:", error);
+        await simulateNetworkDelay(300);
+        setModules(MOCK_MODULES);
+      }
       setLoading(false);
     }
     fetchModules();
@@ -29,4 +40,4 @@ export const ModulesProvider = ({ children }: { children: React.ReactNode }) => 
   );
 };
 
-export const useModules = () => useContext(ModulesContext); 
+export const useModules = () => useContext(ModulesContext);

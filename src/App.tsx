@@ -5,10 +5,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import Index from "./pages/Index";
-// import Admin from "./pages/Admin";
+import Admin from "./pages/Admin"; // 1. Rota do Admin descomentada
 import NotFound from "./pages/NotFound";
+import Prioritize from "./pages/Priorize"; // 2. Importação da nova página de priorização
 import { ModulesProvider } from "./contexts/ModulesContext";
 import { CommentRefreshProvider } from "./contexts/CommentRefreshContext";
+import { SuggestionSyncProvider } from "./contexts/SuggestionSyncContext";
 
 const queryClient = new QueryClient();
 
@@ -21,12 +23,17 @@ const App = () => (
         <BrowserRouter>
           <CommentRefreshProvider>
             <ModulesProvider>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                {/* <Route path="/admin" element={<Admin />} /> */}
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <SuggestionSyncProvider>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  {/* 3. Rotas de Admin e Priorize ativadas */}
+                  <Route path="/admin" element={<Admin />} />
+                  <Route path="/prioritize" element={<Prioritize />} />
+
+                  {/* O catch-all "*" deve ser sempre a última rota */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </SuggestionSyncProvider>
             </ModulesProvider>
           </CommentRefreshProvider>
         </BrowserRouter>

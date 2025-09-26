@@ -152,13 +152,18 @@ export const ChangelogFormDialog = ({ open, onOpenChange, onSubmit }: ChangelogF
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="Bot">Bot</SelectItem>
-                      <SelectItem value="Mapa">Mapa</SelectItem>
-                      <SelectItem value="Workspace">Workspace</SelectItem>
+                      <SelectItem value="Integradores">Integradores</SelectItem>
                       <SelectItem value="Financeiro">Financeiro</SelectItem>
-                      <SelectItem value="Fiscal">Fiscal</SelectItem>
-                      <SelectItem value="SAC">SAC</SelectItem>
-                      <SelectItem value="Agenda">Agenda</SelectItem>
+                      <SelectItem value="Técnico">Técnico</SelectItem>
+                      <SelectItem value="Workspace">Workspace</SelectItem>
+                      <SelectItem value="Estoque">Estoque</SelectItem>
+                      <SelectItem value="Bot">Bot</SelectItem>
+                      <SelectItem value="BI">BI</SelectItem>
+                      <SelectItem value="Mapa">Mapa</SelectItem>
+                      <SelectItem value="Notas">Notas</SelectItem>
+                      <SelectItem value="CRM">CRM</SelectItem>
+                      <SelectItem value="Gestão">Gestão</SelectItem>
+                      <SelectItem value="Outro">Outro</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ChevronUp, MessageCircle, Pin } from "lucide-react";
+import { ChevronUp, MessageCircle, Pin, ExternalLink, Calendar as CalendarIcon, Code, Archive } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useModules } from "@/contexts/ModulesContext";
+import { useSuggestionSync } from "@/contexts/SuggestionSyncContext";
 
 interface Suggestion {
   id: string;
@@ -53,6 +54,8 @@ const getModuleColor = (moduleName: string) => {
 
 const SuggestionTable = ({ suggestions, onVote, onClick }: SuggestionTableProps) => {
   const { modules } = useModules();
+  const { getSuggestionState, hasJiraTask, isInRoadmap, isArchived, getDevelopmentStatus } = useSuggestionSync();
+  
   const handleVoteClick = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     onVote(id);
@@ -78,6 +81,7 @@ const SuggestionTable = ({ suggestions, onVote, onClick }: SuggestionTableProps)
             <TableHead className="w-20 text-center">Comentários</TableHead>
             <TableHead className="w-28">Data</TableHead>
             <TableHead className="w-24">Módulo</TableHead>
+            <TableHead className="w-32">Admin</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -145,6 +149,45 @@ const SuggestionTable = ({ suggestions, onVote, onClick }: SuggestionTableProps)
                 ))}>
                   {modules.find((m) => m.id === suggestion.module)?.nome || "Outro"}
                 </Badge>
+              </TableCell>
+              
+              <TableCell>
+                {(() => {
+                  const suggestionState = getSuggestionState(suggestion.id);
+                  const hasJira = hasJiraTask(suggestion.id);
+                  const inRoadmap = isInRoadmap(suggestion.id);
+                  const archived = isArchived(suggestion.id);
+                  const devStatus = getDevelopmentStatus(suggestion.id);
+                  
+                  return (
+                    <div className="flex flex-wrap gap-1">
+                      {hasJira && (
+                        <Badge className="bg-blue-100 text-blue-800 text-xs px-1 py-0.5 flex items-center gap-1">
+                          <ExternalLink className="w-2 h-2" />
+                          Jira
+                        </Badge>
+                      )}
+                      {inRoadmap && (
+                        <Badge className="bg-purple-100 text-purple-800 text-xs px-1 py-0.5 flex items-center gap-1">
+                          <CalendarIcon className="w-2 h-2" />
+                          Road
+                        </Badge>
+                      )}
+                      {devStatus && devStatus !== "backlog" && (
+                        <Badge className="bg-green-100 text-green-800 text-xs px-1 py-0.5 flex items-center gap-1">
+                          <Code className="w-2 h-2" />
+                          Dev
+                        </Badge>
+                      )}
+                      {archived && (
+                        <Badge className="bg-gray-100 text-gray-800 text-xs px-1 py-0.5 flex items-center gap-1">
+                          <Archive className="w-2 h-2" />
+                          Arq
+                        </Badge>
+                      )}
+                    </div>
+                  );
+                })()}
               </TableCell>
             </TableRow>
           ))}

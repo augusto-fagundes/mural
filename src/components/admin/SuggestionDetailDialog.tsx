@@ -40,7 +40,6 @@ interface SuggestionDetailDialogProps {
 export const SuggestionDetailDialog = ({ suggestion, open, onOpenChange }: SuggestionDetailDialogProps) => {
   const [adminResponse, setAdminResponse] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("");
-  const [selectedPriority, setSelectedPriority] = useState<string>("");
 
   if (!suggestion) return null;
 
@@ -99,8 +98,7 @@ export const SuggestionDetailDialog = ({ suggestion, open, onOpenChange }: Sugge
 
   const handleUpdateSuggestion = () => {
     const updates = {
-      status: selectedStatus || suggestion.status,
-      priority: selectedPriority || suggestion.priority
+      status: selectedStatus || suggestion.status
     };
     console.log("Atualizando sugestão:", suggestion.id, updates);
     // Aqui seria feita a integração com a API
@@ -172,25 +170,13 @@ export const SuggestionDetailDialog = ({ suggestion, open, onOpenChange }: Sugge
                 </Select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-2">Alterar Prioridade</label>
-                <Select value={selectedPriority} onValueChange={setSelectedPriority}>
-                  <SelectTrigger>
-                    <SelectValue placeholder={suggestion.priority} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="baixa">Baixa</SelectItem>
-                    <SelectItem value="media">Média</SelectItem>
-                    <SelectItem value="alta">Alta</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+
             </div>
 
             <Button 
               onClick={handleUpdateSuggestion}
               className="w-full"
-              disabled={!selectedStatus && !selectedPriority}
+              disabled={!selectedStatus}
             >
               Salvar Alterações
             </Button>

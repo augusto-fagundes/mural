@@ -3,6 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Settings, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle";
+import NotificationSystem from "./NotificationSystem";
+import QuickSuggestionTemplates from "./QuickSuggestionTemplates";
+import { usePrioritization } from "@/hooks/usePrioritization";
+import { useSuggestions } from "@/hooks/useSuggestions";
+import { useModules } from "@/contexts/ModulesContext";
+import { useSuggestionStatuses } from "@/hooks/useSuggestionStatuses";
 
 interface HeaderProps {
   onCreateSuggestion: () => void;
@@ -10,6 +16,10 @@ interface HeaderProps {
 
 const Header = ({ onCreateSuggestion }: HeaderProps) => {
   const navigate = useNavigate();
+  const { prioritizedSuggestions } = usePrioritization();
+  const { createSuggestion } = useSuggestions();
+  const { modules } = useModules();
+  const { statuses } = useSuggestionStatuses();
 
   const handleAdminClick = () => {
     navigate("/admin");
@@ -18,6 +28,32 @@ const Header = ({ onCreateSuggestion }: HeaderProps) => {
   // 2. Criamos a função para navegar para a página de priorização
   const handlePrioritizeClick = () => {
     navigate("/prioritize");
+  };
+
+  // Função para criar sugestão a partir dos guias
+  const handleCreateSuggestionFromGuide = async (data: any) => {
+    try {
+      // Encontrar o módulo pelo nome
+      const module = modules.find(m => m.nome === data.module);
+      const moduleId = module?.id || modules[0]?.id; // Fallback para o primeiro módulo
+
+      // Encontrar o status "Recebido" ou usar o primeiro status disponível
+      const receivedStatus = statuses.find(s => s.nome === 'Recebido');
+      const statusId = receivedStatus?.id || statuses[0]?.id;
+
+      const suggestionData = {
+        title: data.title,
+        description: data.description,
+        module_id: moduleId,
+        status_id: statusId,
+        email: 'sistema@mksolution.com', // Email padrão para sugestões criadas via guias
+        isPublic: true
+      };
+
+      await createSuggestion(suggestionData);
+    } catch (error) {
+      console.error('Erro ao criar sugestão:', error);
+    }
   };
 
   return (
@@ -37,6 +73,12 @@ const Header = ({ onCreateSuggestion }: HeaderProps) => {
 
           <div className="flex items-center space-x-4">
             <ThemeToggle />
+            
+            {/* Sistema de Notificações */}
+            <NotificationSystem suggestions={prioritizedSuggestions} />
+            
+            {/* Guias de Melhoria */}
+            <QuickSuggestionTemplates onCreateSuggestion={handleCreateSuggestionFromGuide} />
 
             {/* 3. Adicionamos o novo botão "Priorizar Sugestões" aqui */}
             <Button
@@ -45,7 +87,7 @@ const Header = ({ onCreateSuggestion }: HeaderProps) => {
               className="border-blue-500 text-blue-600 hover:bg-blue-50 hover:text-blue-700 dark:border-[#8be9fd] dark:text-[#8be9fd] dark:hover:bg-[#44475a]"
             >
               <TrendingUp className="w-4 h-4" />
-              Priorizar Sugestões
+              Priorize
             </Button>
 
             <Button

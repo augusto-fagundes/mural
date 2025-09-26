@@ -7,14 +7,28 @@ import {
   DEFAULT_CLIENT_DATA,
   ClientData,
 } from "@/data/mockClientData";
+import { FilterState } from "@/components/AdvancedPrioritizationFilters";
 
 export interface PrioritizedSuggestion {
   id: string;
   title: string;
+  description: string;
+  email: string;
+  votes: number;
+  comments_count: number;
+  created_at: string;
+  module: string;
+  status: string;
+  priority: string;
+  is_public: boolean;
   score: number;
   scoreDetails: Record<string, number | string>;
   clientData: ClientData;
   nivel: { nivel: number | string; cor: string };
+  isArchived?: boolean;
+  developmentStatus?: "backlog" | "in-development" | "testing" | "completed";
+  roadmapId?: string;
+  jiraTaskCode?: string;
 }
 
 const getClientDataByEmail = (email: string): ClientData => {
@@ -25,30 +39,126 @@ const getClientDataByEmail = (email: string): ClientData => {
 };
 
 export const usePrioritization = () => {
-  // --- INÍCIO DA CORREÇÃO ---
-  // ANTES (com erro): const { suggestions: suggestionsFromHook, ... } = useSuggestions(true);
-
-  // CORREÇÃO: Chamamos o hook sem parâmetros.
-  // Ele nos retorna as sugestões e a função para buscá-las.
   const {
     suggestions: suggestionsFromHook,
     loading: loadingSuggestions,
     fetchSuggestions,
   } = useSuggestions();
-  // --- FIM DA CORREÇÃO ---
-
   const [prioritizedSuggestions, setPrioritizedSuggestions] = useState<
     PrioritizedSuggestion[]
   >([]);
   const [loading, setLoading] = useState(true);
+  // 1. NOVO: Estado para controlar a ordenação
+  const [sortBy, setSortBy] = useState<"score" | "votes" | "comments">("score");
+  // 2. NOVO: Estado para filtros avançados
+  const [filters, setFilters] = useState<FilterState>({
+    sortBy: "score",
+    nivelPrioridade: [],
+    faixaClientes: "all",
+    statusPreventivo: [],
+    clienteEnterprise: "all",
+    npsRange: [0, 10],
+    fidelidade: [],
+    scoreRange: [0, 1000],
+  });
+  const [filteredSuggestions, setFilteredSuggestions] = useState<PrioritizedSuggestion[]>([]);
 
-  // NOVO: Usamos useEffect para chamar a função fetchSuggestions assim que o hook for montado.
-  // O "true" aqui dentro garante que estamos buscando TODAS as sugestões (públicas e privadas).
   useEffect(() => {
     fetchSuggestions(true);
   }, [fetchSuggestions]);
 
-  const calculateScores = useCallback(() => {
+  const applyFilters = useCallback((suggestions: PrioritizedSuggestion[], currentFilters: FilterState) => {
+    let filtered = [...suggestions];
+
+    // Filtro por nível de prioridade
+    if (currentFilters.nivelPrioridade.length > 0) {
+      filtered = filtered.filter((s) =>
+        currentFilters.nivelPrioridade.includes(String(s.nivel.nivel))
+      );
+    }
+
+    // Filtro por faixa de clientes
+    if (currentFilters.faixaClientes !== "all") {
+      filtered = filtered.filter((s) => {
+        const totalClientes = s.clientData.total_clientes;
+        switch (currentFilters.faixaClientes) {
+          case "0-5000":
+            return totalClientes <= 5000;
+          case "5001-10000":
+            return totalClientes > 5000 && totalClientes <= 10000;
+          case "10001-15000":
+            return totalClientes > 10000 && totalClientes <= 15000;
+          case "15001-20000":
+            return totalClientes > 15000 && totalClientes <= 20000;
+          case "20001-30000":
+            return totalClientes > 20000 && totalClientes <= 30000;
+          case "30001-50000":
+            return totalClientes > 30000 && totalClientes <= 50000;
+          case "50001+":
+            return totalClientes > 50000;
+          default:
+            return true;
+        }
+      });
+    }
+
+    // Filtro por status preventivo
+    if (currentFilters.statusPreventivo.length > 0) {
+      filtered = filtered.filter((s) =>
+        currentFilters.statusPreventivo.includes(s.clientData.status_preventivo)
+      );
+    }
+
+    // Filtro por cliente enterprise
+    if (currentFilters.clienteEnterprise !== "all") {
+      filtered = filtered.filter((s) => {
+        const isEnterprise = config.CLIENTES_ENTERPRISE.includes(
+          s.clientData.nome.toUpperCase()
+        );
+        return currentFilters.clienteEnterprise === "enterprise" ? isEnterprise : !isEnterprise;
+      });
+    }
+
+    // Filtro por NPS
+    if (currentFilters.npsRange[0] > 0 || currentFilters.npsRange[1] < 10) {
+      filtered = filtered.filter((s) =>
+        s.clientData.nps >= currentFilters.npsRange[0] &&
+        s.clientData.nps <= currentFilters.npsRange[1]
+      );
+    }
+
+    // Filtro por fidelidade
+    if (currentFilters.fidelidade.length > 0) {
+      filtered = filtered.filter((s) =>
+        currentFilters.fidelidade.includes(s.clientData.fidelidade)
+      );
+    }
+
+    // Filtro por score
+    if (currentFilters.scoreRange[0] > 0 || currentFilters.scoreRange[1] < 1000) {
+      filtered = filtered.filter((s) =>
+        s.score >= currentFilters.scoreRange[0] &&
+        s.score <= currentFilters.scoreRange[1]
+      );
+    }
+
+    // Ordenação
+    filtered.sort((a, b) => {
+      switch (currentFilters.sortBy) {
+        case "votes":
+          return b.votes - a.votes;
+        case "comments":
+          return b.comments_count - a.comments_count;
+        case "score":
+        default:
+          return b.score - a.score;
+      }
+    });
+
+    return filtered;
+  }, []);
+
+  const calculateAndSort = useCallback(() => {
     if (suggestionsFromHook.length === 0) {
       setLoading(false);
       return;
@@ -95,6 +205,15 @@ export const usePrioritization = () => {
       return {
         id: suggestion.id,
         title: suggestion.title,
+        description: suggestion.description,
+        email: suggestion.email,
+        votes: suggestion.votes,
+        comments_count: suggestion.comments_count,
+        created_at: suggestion.created_at,
+        module: suggestion.module,
+        status: suggestion.status,
+        priority: suggestion.priority,
+        is_public: suggestion.is_public,
         score: totalScore,
         clientData: clientData,
         nivel: config.getNivelPrioridade(totalScore),
@@ -106,23 +225,53 @@ export const usePrioritization = () => {
           "Tempo da Sugestão": `+${scoreData}`,
           NPS: `+${scoreNPS}`,
           Fidelidade: `+${scoreFidelidade}`,
-          "Qtde Sugestões": `+${scoreQtdeSugestoes}`,
+          "Qtde Sugestoões": `+${scoreQtdeSugestoes}`,
           "Tempo de Casa": `+${scoreTempoCasa}`,
         },
       };
     });
 
-    scored.sort((a, b) => b.score - a.score);
     setPrioritizedSuggestions(scored as PrioritizedSuggestion[]);
+    
+    // Aplicar filtros
+    const filtered = applyFilters(scored as PrioritizedSuggestion[], filters);
+    setFilteredSuggestions(filtered);
+    
     setLoading(false);
-  }, [suggestionsFromHook]);
+  }, [suggestionsFromHook, filters, applyFilters]);
 
   useEffect(() => {
-    // A lógica de cálculo agora depende do 'loadingSuggestions' para ser executada
     if (!loadingSuggestions) {
-      calculateScores();
+      calculateAndSort();
     }
-  }, [loadingSuggestions, calculateScores]);
+  }, [loadingSuggestions, calculateAndSort]);
 
-  return { prioritizedSuggestions, loading };
+  // Atualizar filtros quando sortBy muda
+  useEffect(() => {
+    setFilters(prev => ({ ...prev, sortBy }));
+  }, [sortBy]);
+
+  // Aplicar filtros quando mudam
+  useEffect(() => {
+    if (prioritizedSuggestions.length > 0) {
+      const filtered = applyFilters(prioritizedSuggestions, filters);
+      setFilteredSuggestions(filtered);
+    }
+  }, [prioritizedSuggestions, filters, applyFilters]);
+
+  const handleFiltersChange = useCallback((newFilters: FilterState) => {
+    setFilters(newFilters);
+    setSortBy(newFilters.sortBy);
+  }, []);
+
+  // 3. NOVO: Retorna dados para filtros avançados
+  return { 
+    prioritizedSuggestions, 
+    filteredSuggestions,
+    loading, 
+    sortBy, 
+    setSortBy,
+    filters,
+    handleFiltersChange
+  };
 };
