@@ -7,6 +7,7 @@ import {
   DEFAULT_CLIENT_DATA,
   ClientData,
 } from "@/data/mockClientData";
+import { DOMINIOS_ENTERPRISE } from "@/config/prioritization.config";
 import { FilterState } from "@/components/AdvancedPrioritizationFilters";
 
 export interface PrioritizedSuggestion {
@@ -32,10 +33,39 @@ export interface PrioritizedSuggestion {
 }
 
 const getClientDataByEmail = (email: string): ClientData => {
-  const client = MOCK_CLIENTS.find(
+  // Primeiro tenta busca exata por email (para compatibilidade)
+  const exactClient = MOCK_CLIENTS.find(
     (c) => c.email.toLowerCase() === email.toLowerCase()
   );
-  return client || { ...DEFAULT_CLIENT_DATA, email: email };
+  
+  if (exactClient) {
+    return exactClient;
+  }
+
+  // Se não encontrar, busca por domínio
+  const emailDomain = email.split('@')[1]?.toLowerCase();
+  if (emailDomain) {
+    const enterpriseDomain = DOMINIOS_ENTERPRISE.find(
+      (d) => d.domain.toLowerCase() === emailDomain
+    );
+    
+    if (enterpriseDomain) {
+      // Retorna dados baseados na empresa enterprise encontrada
+      return {
+        nome: enterpriseDomain.companyName,
+        email: email,
+        total_clientes: 25000, // Valor padrão para enterprise
+        status_preventivo: "Preventivo Atenção",
+        nps: 7,
+        fidelidade: "Total",
+        quantidade_sugestoes: 5,
+        anos_de_casa: 5,
+      };
+    }
+  }
+
+  // Se não encontrar nem por email nem por domínio, retorna dados padrão
+  return { ...DEFAULT_CLIENT_DATA, email: email };
 };
 
 export const usePrioritization = () => {
@@ -112,9 +142,13 @@ export const usePrioritization = () => {
     // Filtro por cliente enterprise
     if (currentFilters.clienteEnterprise !== "all") {
       filtered = filtered.filter((s) => {
-        const isEnterprise = config.CLIENTES_ENTERPRISE.includes(
+        const isEnterpriseByDomain = DOMINIOS_ENTERPRISE.some(
+          (d) => s.email.toLowerCase().includes(`@${d.domain.toLowerCase()}`)
+        );
+        const isEnterpriseByName = config.CLIENTES_ENTERPRISE.includes(
           s.clientData.nome.toUpperCase()
         );
+        const isEnterprise = isEnterpriseByDomain || isEnterpriseByName;
         return currentFilters.clienteEnterprise === "enterprise" ? isEnterprise : !isEnterprise;
       });
     }
@@ -173,9 +207,15 @@ export const usePrioritization = () => {
       );
       const scorePreventivo =
         config.PONTUACAO_STATUS_PREVENTIVO[clientData.status_preventivo] || 0;
-      const scoreEnterprise = config.CLIENTES_ENTERPRISE.includes(
+      // Verifica se é cliente enterprise por domínio ou nome
+      const isEnterpriseByDomain = DOMINIOS_ENTERPRISE.some(
+        (d) => suggestion.email.toLowerCase().includes(`@${d.domain.toLowerCase()}`)
+      );
+      const isEnterpriseByName = config.CLIENTES_ENTERPRISE.includes(
         clientData.nome.toUpperCase()
-      )
+      );
+      
+      const scoreEnterprise = (isEnterpriseByDomain || isEnterpriseByName)
         ? config.PONTUACAO_CLIENTE_ENTERPRISE
         : 0;
       const scoreData = config.getPontuacaoPorDataCriacao(

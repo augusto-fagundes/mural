@@ -50,7 +50,35 @@ export const CLIENTES_ENTERPRISE: string[] = [
   "ONLINE TELECOMUNICACOES LTDA",
   "AONET SERVICOS DE COMUNICACAO LTDA",
   "ONNET TELECOMUNICACOES LTDA",
+  "MK SOLUTIONS LTDA",
 ].map((name) => name.toUpperCase());
+
+// 3.1. Mapeamento de Domínios Enterprise
+export interface EnterpriseDomain {
+  domain: string;
+  companyName: string;
+  id: string;
+}
+
+export const DOMINIOS_ENTERPRISE: EnterpriseDomain[] = [
+  { id: "1", domain: "alcans.com.br", companyName: "ALCANS TELECOM LTDA" },
+  { id: "2", domain: "vetorial.net", companyName: "VETORIAL.NET INFORMATICA E SERVICOS DE INTERNET LTDA" },
+  { id: "3", domain: "netfacil.com.br", companyName: "NETFACIL LOCACAO E SERVICOS LTDA" },
+  { id: "4", domain: "brasrede.com.br", companyName: "BRASREDE TELECOMUNICACOES LTDA" },
+  { id: "5", domain: "razaoinfo.com.br", companyName: "RAZAOINFO INTERNET LTDA" },
+  { id: "6", domain: "bitcom.com.br", companyName: "BITCOM PROVEDOR DE SERVICOS DE INTERNET LTDA" },
+  { id: "7", domain: "brphonia.com.br", companyName: "BRPHONIA PROVEDOR IP LTDA" },
+  { id: "8", domain: "linksete.com.br", companyName: "LINK SETE SERVICOS DE INTERNET E REDES LTDA" },
+  { id: "9", domain: "navenet.com.br", companyName: "NAVE NET SERVICOS DE INTERNET LTDA" },
+  { id: "10", domain: "adyl.net", companyName: "ADYL.NET ACESSO A INTERNET LTDA" },
+  { id: "11", domain: "pro-servicos.com.br", companyName: "PRO-SERVICOS DE INTERNET LTDA" },
+  { id: "12", domain: "directwifi.com.br", companyName: "DIRECT WIFI INFORMATICA LTDA" },
+  { id: "13", domain: "seatelecom.com.br", companyName: "SEA TELECOM LTDA" },
+  { id: "14", domain: "onlinetel.com.br", companyName: "ONLINE TELECOMUNICACOES LTDA" },
+  { id: "15", domain: "aonet.com.br", companyName: "AONET SERVICOS DE COMUNICACAO LTDA" },
+  { id: "16", domain: "onnet.com.br", companyName: "ONNET TELECOMUNICACOES LTDA" },
+  { id: "17", domain: "mksolution.com", companyName: "MK SOLUTIONS LTDA" },
+];
 
 export const PONTUACAO_CLIENTE_ENTERPRISE = 100;
 

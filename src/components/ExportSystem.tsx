@@ -193,9 +193,27 @@ const ExportSystem = ({ suggestions, analytics }: ExportSystemProps) => {
       
       setIsOpen(false);
     } catch (error) {
+      console.error("Export error:", error);
+      
+      let errorMessage = "Ocorreu um erro ao gerar o arquivo. ";
+      
+      if (error instanceof Error) {
+        if (error.message.includes('memory') || error.message.includes('size')) {
+          errorMessage += "Muitos dados para exportar. Tente filtrar menos sugestões.";
+        } else if (error.message.includes('permission')) {
+          errorMessage += "Sem permissão para baixar arquivos. Verifique as configurações do navegador.";
+        } else if (error.message.includes('network')) {
+          errorMessage += "Problema de conexão. Verifique sua internet e tente novamente.";
+        } else {
+          errorMessage += "Tente novamente ou entre em contato com o suporte.";
+        }
+      } else {
+        errorMessage += "Tente novamente em alguns instantes.";
+      }
+      
       toast({
         title: "Erro na exportação",
-        description: "Ocorreu um erro ao gerar o arquivo. Tente novamente.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

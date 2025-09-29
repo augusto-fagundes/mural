@@ -3,9 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Settings, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle";
-import NotificationSystem from "./NotificationSystem";
 import QuickSuggestionTemplates from "./QuickSuggestionTemplates";
-import { usePrioritization } from "@/hooks/usePrioritization";
 import { useSuggestions } from "@/hooks/useSuggestions";
 import { useModules } from "@/contexts/ModulesContext";
 import { useSuggestionStatuses } from "@/hooks/useSuggestionStatuses";
@@ -16,7 +14,6 @@ interface HeaderProps {
 
 const Header = ({ onCreateSuggestion }: HeaderProps) => {
   const navigate = useNavigate();
-  const { prioritizedSuggestions } = usePrioritization();
   const { createSuggestion } = useSuggestions();
   const { modules } = useModules();
   const { statuses } = useSuggestionStatuses();
@@ -53,6 +50,8 @@ const Header = ({ onCreateSuggestion }: HeaderProps) => {
       await createSuggestion(suggestionData);
     } catch (error) {
       console.error('Erro ao criar sugestão:', error);
+      // Note: Toast notification should be handled by the useSuggestions hook
+      // This is just a fallback log for debugging
     }
   };
 
@@ -74,9 +73,6 @@ const Header = ({ onCreateSuggestion }: HeaderProps) => {
           <div className="flex items-center space-x-4">
             <ThemeToggle />
             
-            {/* Sistema de Notificações */}
-            <NotificationSystem suggestions={prioritizedSuggestions} />
-            
             {/* Guias de Melhoria */}
             <QuickSuggestionTemplates onCreateSuggestion={handleCreateSuggestionFromGuide} />
 
@@ -97,8 +93,7 @@ const Header = ({ onCreateSuggestion }: HeaderProps) => {
               Nova Sugestão
             </Button>
 
-            {/* O botão de Admin continua aqui, ative-o se precisar */}
-            {/* <Button
+            <Button
               onClick={handleAdminClick}
               variant="outline"
               size="sm"
@@ -106,8 +101,7 @@ const Header = ({ onCreateSuggestion }: HeaderProps) => {
             >
               <Settings className="w-4 h-4" />
               Admin
-            </Button> 
-            */}
+            </Button>
           </div>
         </div>
       </div>

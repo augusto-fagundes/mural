@@ -18,7 +18,7 @@ export interface ClientData {
 export const MOCK_CLIENTS: ClientData[] = [
   {
     nome: "ALCANS TELECOM LTDA",
-    email: "carlos@empresa.com",
+    email: "carlos@alcans.com.br",
     total_clientes: 58000,
     status_preventivo: "Preventivo Urgente",
     nps: 0,
@@ -28,7 +28,7 @@ export const MOCK_CLIENTS: ClientData[] = [
   },
   {
     nome: "RAZAOINFO INTERNET LTDA",
-    email: "ana@empresa.com",
+    email: "ana@razaoinfo.com.br",
     total_clientes: 25000,
     status_preventivo: "Preventivo Atenção",
     nps: 8,
@@ -38,7 +38,7 @@ export const MOCK_CLIENTS: ClientData[] = [
   },
   {
     nome: "LINK SETE SERVICOS DE INTERNET E REDES LTDA",
-    email: "lucia@empresa.com",
+    email: "lucia@linksete.com.br",
     total_clientes: 55000,
     status_preventivo: "Preventivo Urgente",
     nps: 1,
@@ -65,6 +65,16 @@ export const MOCK_CLIENTS: ClientData[] = [
     fidelidade: "Sem fidelidade",
     quantidade_sugestoes: 1,
     anos_de_casa: 0,
+  },
+  {
+    nome: "MK SOLUTIONS LTDA",
+    email: "sistema@mksolution.com",
+    total_clientes: 45000,
+    status_preventivo: "Preventivo Crítico",
+    nps: 2,
+    fidelidade: "Total",
+    quantidade_sugestoes: 12,
+    anos_de_casa: 15,
   },
 ];
 

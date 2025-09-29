@@ -87,55 +87,7 @@ export const MOCK_SUGGESTION_STATUSES: MockSuggestionStatus[] = [
   }
 ];
 
-export const MOCK_SUGGESTIONS: MockSuggestion[] = [
-  {
-    id: "suggestion-1",
-    title: "Implementar Dashboard de Vendas em Tempo Real",
-    description: "Criar um dashboard que mostre vendas em tempo real com gráficos interativos, métricas de performance e alertas automáticos para metas não atingidas. O dashboard deve incluir filtros por período, vendedor, produto e região. Esta funcionalidade seria muito útil para acompanhar o desempenho das vendas e tomar decisões mais rápidas baseadas em dados atualizados.",
-    email: "carlos@empresa.com",
-    youtube_url: "",
-    is_public: true,
-    votes: 15,
-    comments_count: 8,
-    admin_response: "",
-    is_pinned: false,
-    status_id: "status-2", // Em análise
-    module_id: "module-1", // Financeiro
-    image_urls: [],
-    created_at: "2024-01-15T10:30:00Z",
-    updated_at: "2024-01-15T10:30:00Z"
-  },
-  {
-    id: "suggestion-2",
-    title: "Integração com WhatsApp Business API",
-    description: "Integrar o sistema com WhatsApp Business para envio automático de notificações de pedidos, cobranças e suporte ao cliente. Incluir templates de mensagens personalizáveis e histórico de conversas. Esta integração permitiria uma comunicação mais eficiente com os clientes e automatizaria muitos processos de atendimento.",
-    email: "lucia@empresa.com",
-    youtube_url: "",
-    is_public: true,
-    votes: 31,
-    comments_count: 18,
-    status_id: "status-1", // Recebido
-    module_id: "module-5", // Integrações
-    image_urls: [],
-    created_at: "2024-01-08T09:15:00Z",
-    updated_at: "2024-01-08T09:15:00Z"
-  },
-  {
-    id: "suggestion-3",
-    title: "Melhorias no Bot de Atendimento",
-    description: "Aprimorar o bot de atendimento com inteligência artificial mais avançada, incluindo processamento de linguagem natural melhorado, integração com base de conhecimento e capacidade de escalonamento automático para atendentes humanos quando necessário. O bot atual é muito básico e não consegue resolver questões mais complexas dos usuários.",
-    email: "ana@empresa.com",
-    youtube_url: "",
-    is_public: true,
-    votes: 22,
-    comments_count: 12,
-    status_id: "status-3", // Aprovada
-    module_id: "module-3", // Bot
-    image_urls: [],
-    created_at: "2024-01-10T14:20:00Z",
-    updated_at: "2024-01-10T14:20:00Z"
-  }
-];
+export const MOCK_SUGGESTIONS: MockSuggestion[] = [];
 
 // Função para simular delay de rede
 export const simulateNetworkDelay = (ms: number = 500): Promise<void> => {
@@ -148,15 +100,20 @@ export const generateId = (): string => {
 };
 
 // Storage local para persistir dados durante a sessão
-class MockStorage {
+export class MockStorage {
   private static instance: MockStorage;
-  private suggestions: MockSuggestion[] = [...MOCK_SUGGESTIONS];
+  private suggestions: MockSuggestion[] = [];
 
   static getInstance(): MockStorage {
     if (!MockStorage.instance) {
       MockStorage.instance = new MockStorage();
+      MockStorage.instance.initializeWithMockData();
     }
     return MockStorage.instance;
+  }
+
+  private initializeWithMockData(): void {
+    this.suggestions = [...MOCK_SUGGESTIONS];
   }
 
   getSuggestions(): MockSuggestion[] {

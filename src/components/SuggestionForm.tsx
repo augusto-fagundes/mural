@@ -136,7 +136,24 @@ const SuggestionForm = ({ onSubmit, onCancel }: SuggestionFormProps) => {
             
             if (uploadError) {
               console.error("Upload error:", uploadError);
-              throw uploadError;
+              let errorMessage = "Não foi possível fazer upload da imagem. ";
+              
+              if (uploadError.message.includes('size')) {
+                errorMessage += "O arquivo é muito grande. Tente uma imagem menor que 5MB.";
+              } else if (uploadError.message.includes('type')) {
+                errorMessage += "Formato de arquivo não suportado. Use JPG, PNG ou GIF.";
+              } else if (uploadError.message.includes('network')) {
+                errorMessage += "Problema de conexão. Verifique sua internet e tente novamente.";
+              } else {
+                errorMessage += "Tente novamente ou entre em contato com o suporte.";
+              }
+              
+              toast({
+                title: "Erro no upload",
+                description: errorMessage,
+                variant: "destructive",
+              });
+              return;
             }
 
             const {
@@ -185,9 +202,26 @@ const SuggestionForm = ({ onSubmit, onCancel }: SuggestionFormProps) => {
 
     } catch (error) {
       console.error("Erro no handleSubmit:", error);
+      
+      let errorMessage = "Ocorreu um erro ao processar sua sugestão. ";
+      
+      if (error instanceof Error) {
+        if (error.message.includes('network') || error.message.includes('fetch')) {
+          errorMessage += "Verifique sua conexão com a internet e tente novamente.";
+        } else if (error.message.includes('permission') || error.message.includes('unauthorized')) {
+          errorMessage += "Você não tem permissão para realizar esta ação.";
+        } else if (error.message.includes('validation')) {
+          errorMessage += "Alguns dados estão inválidos. Verifique os campos e tente novamente.";
+        } else {
+          errorMessage += "Tente novamente em alguns instantes ou entre em contato com o suporte.";
+        }
+      } else {
+        errorMessage += "Tente novamente em alguns instantes.";
+      }
+      
       toast({
-        title: "Erro inesperado",
-        description: "Ocorreu um erro ao processar sua sugestão. Tente novamente.",
+        title: "Erro ao criar sugestão",
+        description: errorMessage,
         variant: "destructive",
       });
     }

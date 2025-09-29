@@ -242,82 +242,76 @@ const Index = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-[#f8f8f2] mb-6">Mural de Sugestões MK Solutions</h1>
-          <Tabs defaultValue="suggestions">
-            <TabsContent value="suggestions" className="mt-6">
-              <div className="text-center mb-8">
-                <p className="text-lg text-gray-600 dark:text-[#bd93f9] max-w-2xl mx-auto">
-                  Ajude-nos a melhorar nossos produtos! Compartilhe suas ideias, vote nas sugestões e acompanhe o desenvolvimento.
-                </p>
-              </div>
-
-              <FilterBar
-                suggestions={transformedSuggestions}
-                filterSuggestions={async (moduleId, statusId, searchTerm, customSortBy) => {
-                  await filterSuggestions(moduleId, statusId, searchTerm, false, customSortBy);
-                }}
-              />
-
-              <Tabs defaultValue="cards" className="mt-8">
-                <TabsList className="grid w-full grid-cols-2 max-w-2xl mx-auto bg-white dark:bg-[#44475a] border dark:border-[#6272a4]">
-                  <TabsTrigger
-                    value="cards"
-                    className="data-[state=active]:bg-dark_blue_mk data-[state=active]:text-white dark:data-[state=active]:bg-[#bd93f9] dark:data-[state=active]:text-[#282a36] dark:text-[#f8f8f2]"
-                  >
-                    Visualização em Card
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="list"
-                    className="data-[state=active]:bg-dark_blue_mk data-[state=active]:text-white dark:data-[state=active]:bg-[#bd93f9] dark:data-[state=active]:text-[#282a36] dark:text-[#f8f8f2]"
-                  >
-                    Lista
-                  </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="cards" className="mt-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {transformedSuggestions.map((suggestion) => (
-                      <SuggestionCard 
-                        key={suggestion.id} 
-                        suggestion={suggestion} 
-                        onVote={handleVote} 
-                        onFavorite={handleFavorite} 
-                        onClick={handleSuggestionClick} 
-                        onViewDetails={handleViewDetails}
-                        onViewActions={handleViewActions}
-                        layout="card" 
-                        isHomePage={true}
-                      />
-                    ))}
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="list" className="mt-6">
-                  <div className="space-y-4">
-                    {transformedSuggestions.map((suggestion) => (
-                      <SuggestionCard 
-                        key={suggestion.id} 
-                        suggestion={suggestion} 
-                        onVote={handleVote} 
-                        onFavorite={handleFavorite} 
-                        onClick={handleSuggestionClick} 
-                        onViewDetails={handleViewDetails}
-                        onViewActions={handleViewActions}
-                        layout="list" 
-                        isHomePage={true}
-                      />
-                    ))}
-                  </div>
-                </TabsContent>
-              </Tabs>
-
-              {transformedSuggestions.length === 0 && !loading && (
-                <div className="text-center py-12">
-                  <p className="text-gray-500 dark:text-gray-400 text-lg">Nenhuma sugestão encontrada com os filtros aplicados.</p>
-                </div>
-              )}
-            </TabsContent>
-          </Tabs>
+          <p className="text-lg text-gray-600 dark:text-[#bd93f9] max-w-2xl mx-auto">
+            Ajude-nos a melhorar nossos produtos! Compartilhe suas ideias, vote nas sugestões e acompanhe o desenvolvimento.
+          </p>
         </div>
+
+        <FilterBar
+          suggestions={transformedSuggestions}
+          filterSuggestions={async (moduleId, statusId, searchTerm, customSortBy) => {
+            await filterSuggestions(moduleId, statusId, searchTerm, false, customSortBy);
+          }}
+        />
+
+        <Tabs defaultValue="cards" className="mt-8">
+          <TabsList className="grid w-full grid-cols-2 max-w-2xl mx-auto bg-white dark:bg-[#44475a] border dark:border-[#6272a4]">
+            <TabsTrigger
+              value="cards"
+              className="data-[state=active]:bg-dark_blue_mk data-[state=active]:text-white dark:data-[state=active]:bg-[#bd93f9] dark:data-[state=active]:text-[#282a36] dark:text-[#f8f8f2]"
+            >
+              Visualização em Card
+            </TabsTrigger>
+            <TabsTrigger
+              value="list"
+              className="data-[state=active]:bg-dark_blue_mk data-[state=active]:text-white dark:data-[state=active]:bg-[#bd93f9] dark:data-[state=active]:text-[#282a36] dark:text-[#f8f8f2]"
+            >
+              Lista
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="cards" className="mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {transformedSuggestions.map((suggestion) => (
+                <SuggestionCard 
+                  key={suggestion.id} 
+                  suggestion={suggestion} 
+                  onVote={handleVote} 
+                  onFavorite={handleFavorite} 
+                  onClick={handleSuggestionClick} 
+                  onViewDetails={handleViewDetails}
+                  onViewActions={handleViewActions}
+                  layout="card" 
+                  isHomePage={true}
+                />
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="list" className="mt-6">
+            <div className="space-y-4">
+              {transformedSuggestions.map((suggestion) => (
+                <SuggestionCard 
+                  key={suggestion.id} 
+                  suggestion={suggestion} 
+                  onVote={handleVote} 
+                  onFavorite={handleFavorite} 
+                  onClick={handleSuggestionClick} 
+                  onViewDetails={handleViewDetails}
+                  onViewActions={handleViewActions}
+                  layout="list" 
+                  isHomePage={true}
+                />
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
+
+        {transformedSuggestions.length === 0 && !loading && (
+          <div className="text-center py-12">
+            <p className="text-gray-500 dark:text-gray-400 text-lg">Nenhuma sugestão encontrada com os filtros aplicados.</p>
+          </div>
+        )}
       </main>
 
       <SuggestionDetailDialog

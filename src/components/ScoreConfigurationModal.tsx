@@ -47,8 +47,12 @@ import {
   Save,
   RotateCcw,
   AlertTriangle,
+  Plus,
+  Trash2,
+  Edit,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { EnterpriseDomain } from "@/config/prioritization.config";
 
 interface ScoreConfig {
   pontuacaoPorVoto: number;
@@ -60,6 +64,7 @@ interface ScoreConfig {
   fidelidade: { [key: string]: number };
   quantidadeSugestoes: { [key: string]: number };
   niveisScore: { [key: string]: number };
+  dominiosEnterprise: EnterpriseDomain[];
 }
 
 interface ScoreConfigurationModalProps {
@@ -128,6 +133,11 @@ const ScoreConfigurationModal = ({
       "400": 1,
       "500": 0, // Urgente
     },
+    dominiosEnterprise: [
+      { domain: "alcans.com.br", companyName: "ALCANS TELECOM LTDA" },
+      { domain: "razaoinfo.com.br", companyName: "RAZAOINFO INTERNET LTDA" },
+      { domain: "linksete.com.br", companyName: "LINK SETE SERVICOS DE INTERNET E REDES LTDA" },
+    ],
   });
 
   const [originalConfig, setOriginalConfig] = useState<ScoreConfig>(config);
@@ -226,6 +236,33 @@ const ScoreConfigurationModal = ({
     }));
   };
 
+  // Funções para gerenciar domínios enterprise
+  const addEnterpriseDomain = () => {
+    setConfig(prev => ({
+      ...prev,
+      dominiosEnterprise: [
+        ...prev.dominiosEnterprise,
+        { domain: "", companyName: "" }
+      ],
+    }));
+  };
+
+  const updateEnterpriseDomain = (index: number, field: keyof EnterpriseDomain, value: string) => {
+    setConfig(prev => ({
+      ...prev,
+      dominiosEnterprise: prev.dominiosEnterprise.map((domain, i) =>
+        i === index ? { ...domain, [field]: value } : domain
+      ),
+    }));
+  };
+
+  const removeEnterpriseDomain = (index: number) => {
+    setConfig(prev => ({
+      ...prev,
+      dominiosEnterprise: prev.dominiosEnterprise.filter((_, i) => i !== index),
+    }));
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
@@ -240,8 +277,9 @@ const ScoreConfigurationModal = ({
         </DialogHeader>
 
         <Tabs defaultValue="client-data" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="client-data">Dados do Cliente</TabsTrigger>
+            <TabsTrigger value="enterprise-clients">Clientes Enterprise</TabsTrigger>
             <TabsTrigger value="suggestion-data">Dados da Sugestão</TabsTrigger>
             <TabsTrigger value="priority-levels">Níveis de Prioridade</TabsTrigger>
           </TabsList>
@@ -317,31 +355,6 @@ const ScoreConfigurationModal = ({
                       ))}
                     </TableBody>
                   </Table>
-                </CardContent>
-              </Card>
-
-              {/* Cliente Enterprise */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Building2 className="w-5 h-5 text-blue-600" />
-                    Cliente Enterprise
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="enterprise-points">Pontuação adicional</Label>
-                      <Input
-                        id="enterprise-points"
-                        type="number"
-                        value={config.pontuacaoClienteEnterprise}
-                        onChange={(e) => setConfig(prev => ({ ...prev, pontuacaoClienteEnterprise: Number(e.target.value) }))}
-                        className="w-32 mt-1"
-                        min="0"
-                      />
-                    </div>
-                  </div>
                 </CardContent>
               </Card>
 
@@ -443,6 +456,106 @@ const ScoreConfigurationModal = ({
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="enterprise-clients" className="space-y-6 mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-blue-600" />
+                  Domínios de Clientes Enterprise
+                </CardTitle>
+                <CardDescription>
+                  Configure os domínios de email que identificam clientes enterprise. 
+                  Emails com estes domínios receberão automaticamente a pontuação enterprise.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* Pontuação Enterprise */}
+                  <div className="flex items-center gap-4 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                    <div>
+                      <Label htmlFor="enterprise-points">Pontuação adicional para clientes enterprise</Label>
+                      <Input
+                        id="enterprise-points"
+                        type="number"
+                        value={config.pontuacaoClienteEnterprise}
+                        onChange={(e) => setConfig(prev => ({ ...prev, pontuacaoClienteEnterprise: Number(e.target.value) }))}
+                        className="w-32 mt-1"
+                        min="0"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Lista de Domínios */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium">Domínios Enterprise</h4>
+                      <Button onClick={addEnterpriseDomain} size="sm" className="flex items-center gap-2">
+                        <Plus className="w-4 h-4" />
+                        Adicionar Domínio
+                      </Button>
+                    </div>
+
+                    {config.dominiosEnterprise.length === 0 ? (
+                      <div className="text-center py-8 text-gray-500">
+                        Nenhum domínio enterprise configurado.
+                        <br />
+                        Clique em "Adicionar Domínio" para começar.
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {config.dominiosEnterprise.map((domain, index) => (
+                          <div key={index} className="flex items-center gap-3 p-3 border rounded-lg">
+                            <div className="flex-1 grid grid-cols-2 gap-3">
+                              <div>
+                                <Label htmlFor={`domain-${index}`} className="text-sm">Domínio</Label>
+                                <Input
+                                  id={`domain-${index}`}
+                                  placeholder="exemplo.com.br"
+                                  value={domain.domain}
+                                  onChange={(e) => updateEnterpriseDomain(index, 'domain', e.target.value)}
+                                  className="mt-1"
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor={`company-${index}`} className="text-sm">Nome da Empresa</Label>
+                                <Input
+                                  id={`company-${index}`}
+                                  placeholder="Nome da empresa"
+                                  value={domain.companyName}
+                                  onChange={(e) => updateEnterpriseDomain(index, 'companyName', e.target.value)}
+                                  className="mt-1"
+                                />
+                              </div>
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => removeEnterpriseDomain(index)}
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Informações sobre como funciona */}
+                  <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
+                    <h5 className="font-medium mb-2">Como funciona:</h5>
+                    <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                      <li>• Emails com domínios cadastrados aqui são automaticamente identificados como enterprise</li>
+                      <li>• A empresa associada ao domínio será usada para identificação do cliente</li>
+                      <li>• Clientes enterprise recebem a pontuação adicional configurada acima</li>
+                      <li>• Exemplo: usuario@alcans.com.br será identificado como "ALCANS TELECOM LTDA"</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="suggestion-data" className="space-y-6 mt-6">
